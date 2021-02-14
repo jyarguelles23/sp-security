@@ -15,8 +15,11 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
      // Authorize any request, must be authenticated and mecanism is basic authentication.
+
        http
                .authorizeRequests()
+               .antMatchers("/","index","/css/*","/js/*","/ts/*")
+               .permitAll()
                .anyRequest()
                .authenticated()
                .and()
