@@ -1,6 +1,7 @@
 package com.example.springsecurity.Security;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 /* This class We set all the security configurations for our application */
@@ -16,6 +18,12 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 @EnableWebSecurity
 public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public AppSecurityConfig(PasswordEncoder passwordEncoder){
+        this.passwordEncoder=passwordEncoder;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -36,7 +44,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     protected UserDetailsService userDetailsService() {
       UserDetails anna =  User.builder()
                 .username("annasmith")
-                .password("slipknot")
+                .password(passwordEncoder.encode("slipknot"))
                 .roles("STUDENT") // role student
                 .build();
       // for in memory database user
