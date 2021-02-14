@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
+import static com.example.springsecurity.Security.AppUserRoles.*;
+
 /* This class We set all the security configurations for our application */
 @Configuration
 @EnableWebSecurity
@@ -38,18 +40,26 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                .httpBasic();
     }
 
-    /*This is how u retrive your users from database*/
+    /*This is how u retrieve your users from database*/
     @Override
     @Bean
     protected UserDetailsService userDetailsService() {
       UserDetails anna =  User.builder()
                 .username("annasmith")
                 .password(passwordEncoder.encode("slipknot"))
-                .roles("STUDENT") // role student
+                .roles(STUDENT.name()) // role student
                 .build();
+
+        UserDetails yasser=  User.builder()
+                .username("yasser")
+                .password(passwordEncoder.encode("123"))
+                .roles(ADMIN.name()) // role student
+                .build();
+
       // for in memory database user
       return new InMemoryUserDetailsManager(
-              anna
+              anna,
+              yasser
       );
     }
 }
