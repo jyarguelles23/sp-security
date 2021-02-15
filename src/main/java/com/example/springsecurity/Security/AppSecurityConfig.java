@@ -32,15 +32,16 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
      // Authorize any request, must be authenticated and mecanism is basic authentication.
+        //order does matter in this conditions
        http
                .csrf().disable() //Later In detail
                .authorizeRequests()
                .antMatchers("/","index","/css/*","/js/*","/ts/*")
                .permitAll()
                .antMatchers("/api/**").hasRole(STUDENT.name())
-               .antMatchers(HttpMethod.DELETE,"managament/api/**").hasAuthority(COURSE_WRITE.name())
-               .antMatchers(HttpMethod.POST,"managament/api/**").hasAuthority(COURSE_WRITE.name())
-               .antMatchers(HttpMethod.PUT,"managament/api/**").hasAuthority(COURSE_WRITE.name())
+               .antMatchers(HttpMethod.DELETE,"managament/api/**").hasAuthority(COURSE_WRITE.getPermission())
+               .antMatchers(HttpMethod.POST,"managament/api/**").hasAuthority(COURSE_WRITE.getPermission())
+               .antMatchers(HttpMethod.PUT,"managament/api/**").hasAuthority(COURSE_WRITE.getPermission())
                .antMatchers(HttpMethod.GET,"managament/api/**").hasAnyRole(ADMIN.name(),ADMIN_TRAINEE.name())
                .anyRequest()
                .authenticated()
