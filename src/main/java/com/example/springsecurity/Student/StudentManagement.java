@@ -1,5 +1,6 @@
 package com.example.springsecurity.Student;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -17,11 +18,14 @@ public class StudentManagement {
 
 
     @GetMapping(path="/all")
+    //In case you want to secure an specific rest service yo can do it like this instead of config file
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_ADMINTRAINEE')")
     public List<Student> getStudent() {
         return STUDENTS;
     }
 
     @PostMapping()
+    @PreAuthorize("hasAuthority('student:write')")
     public void registerNewStudent(@RequestBody Student student){
         System.out.println(student.getStudentName());
     }
