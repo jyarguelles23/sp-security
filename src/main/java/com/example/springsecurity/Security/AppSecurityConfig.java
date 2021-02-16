@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import static com.example.springsecurity.Security.AppUserPermission.*;
 import static com.example.springsecurity.Security.AppUserRoles.*;
@@ -37,19 +38,19 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
      // Authorize any request, must be authenticated and mecanism is basic authentication.
         //order does matter in this conditions
        http
-               .csrf().disable() //Later In detail
+               //.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+               //.and()
+               .csrf().disable()
                .authorizeRequests()
                .antMatchers("/","index","/css/*","/js/*","/ts/*")
                .permitAll()
                .antMatchers("/api/**").hasRole(STUDENT.name())
-               .antMatchers(HttpMethod.DELETE,"managament/api/**").hasAuthority(COURSE_WRITE.getPermission())
-               .antMatchers(HttpMethod.POST,"managament/api/**").hasAuthority(COURSE_WRITE.getPermission())
-               .antMatchers(HttpMethod.PUT,"managament/api/**").hasAuthority(COURSE_WRITE.getPermission())
-               .antMatchers(HttpMethod.GET,"managament/api/**").hasAnyRole(ADMIN.name(),ADMIN_TRAINEE.name())
                .anyRequest()
                .authenticated()
                .and()
-               .httpBasic();
+               .formLogin()
+               .loginPage("/login").permitAll();
+
     }
 
     /*This is how u retrieve your users from database*/
