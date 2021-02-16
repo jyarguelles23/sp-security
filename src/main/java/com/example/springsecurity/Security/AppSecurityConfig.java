@@ -49,7 +49,10 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                .authenticated()
                .and()
                .formLogin()
-               .loginPage("/login").permitAll();
+               .loginPage("/login").permitAll()
+               .defaultSuccessUrl("/courses",true)
+               .and()
+               .rememberMe(); //default 2 weeks after login
 
     }
 
