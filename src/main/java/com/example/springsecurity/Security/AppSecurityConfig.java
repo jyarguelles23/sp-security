@@ -56,7 +56,14 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                .and()
                .rememberMe()//default 2 weeks after login
                 .tokenValiditySeconds((int)TimeUnit.DAYS.toSeconds(21)) //remember me for 3 weeks after login
-                .key("yaserthisissecured");
+                .key("yaserthisissecured")
+               .and()
+               .logout()
+                .logoutUrl("/logout")
+                 .clearAuthentication(true)
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID","remember-me")
+                .logoutSuccessUrl("/login");
 
     }
 
