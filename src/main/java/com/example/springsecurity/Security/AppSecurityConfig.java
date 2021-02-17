@@ -2,6 +2,7 @@ package com.example.springsecurity.Security;
 
 
 import com.example.springsecurity.Auth.AppUserService;
+import com.example.springsecurity.JWT.JwtUsernameAndPasswordAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.concurrent.TimeUnit;
@@ -42,30 +44,16 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                //.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                //.and()
                .csrf().disable()
+               .sessionManagement()
+               .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+               .and()
+               .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager()))
                .authorizeRequests()
                .antMatchers("/","index","/css/*","/js/*","/ts/*")
                .permitAll()
                .antMatchers("/api/**").hasRole(STUDENT.name())
                .anyRequest()
-               .authenticated()
-               .and()
-               .formLogin()
-               .loginPage("/login").permitAll()
-               .defaultSuccessUrl("/courses",true)
-               .passwordParameter("password")
-               .usernameParameter("username")
-               .and()
-               .rememberMe()//default 2 weeks after login
-                .tokenValiditySeconds((int)TimeUnit.DAYS.toSeconds(21)) //remember me for 3 weeks after login
-                .key("yaserthisissecured")
-                .rememberMeParameter("remember-me")
-               .and()
-               .logout()
-                .logoutUrl("/logout")
-                 .clearAuthentication(true)
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID","remember-me")
-                .logoutSuccessUrl("/login");
+               .authenticated();
 
     }
 
