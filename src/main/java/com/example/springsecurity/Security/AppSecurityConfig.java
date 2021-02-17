@@ -53,10 +53,13 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                .formLogin()
                .loginPage("/login").permitAll()
                .defaultSuccessUrl("/courses",true)
+               .passwordParameter("password")
+               .usernameParameter("username")
                .and()
                .rememberMe()//default 2 weeks after login
                 .tokenValiditySeconds((int)TimeUnit.DAYS.toSeconds(21)) //remember me for 3 weeks after login
                 .key("yaserthisissecured")
+                .rememberMeParameter("remember-me")
                .and()
                .logout()
                 .logoutUrl("/logout")
