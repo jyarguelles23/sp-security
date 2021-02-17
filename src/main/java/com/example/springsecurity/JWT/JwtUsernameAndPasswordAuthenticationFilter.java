@@ -1,16 +1,22 @@
 package com.example.springsecurity.JWT;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Date;
 
 public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -39,5 +45,25 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
             throw new RuntimeException(e);
         }
 
+    }
+
+    //Method if authentication is succesfull for generate de the token
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            FilterChain chain,
+                                            Authentication authResult) throws IOException, ServletException {
+
+        final String key="securemyapisjyarguelles23elmaskbronqueescribe";
+
+        String token = Jwts.builder()
+                .setSubject(authResult.getName())
+                .claim("authorities",authResult.getAuthorities())
+                .setIssuedAt(new Date())
+                .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusWeeks(2)))
+                .signWith(Keys.hmacShaKeyFor(key.getBytes()))
+                .compact();
+
+        response.addHeader("Authorization","Bearer"+token);
     }
 }
