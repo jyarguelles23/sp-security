@@ -1,24 +1,20 @@
 package com.example.springsecurity.Security;
 
 
+import com.example.springsecurity.Auth.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.example.springsecurity.Security.AppUserPermission.*;
 import static com.example.springsecurity.Security.AppUserRoles.*;
 
 /* This class We set all the security configurations for our application */
@@ -30,9 +26,12 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final AppUserService appUserService;
+
     @Autowired
-    public AppSecurityConfig(PasswordEncoder passwordEncoder){
+    public AppSecurityConfig(PasswordEncoder passwordEncoder, AppUserService appUserService){
         this.passwordEncoder=passwordEncoder;
+        this.appUserService = appUserService;
     }
 
     @Override
@@ -70,8 +69,25 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 
     }
 
-    /*This is how u retrieve your users from database*/
+    //Using Custom class for login this how wire things up
     @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(daoAuthenticationProvider());
+    }
+
+    /*This is how u retrieve your users from database*/
+    @Bean
+    public  DaoAuthenticationProvider daoAuthenticationProvider(){
+        DaoAuthenticationProvider provider=new DaoAuthenticationProvider();
+        //this line allows password to be decoded
+        provider.setPasswordEncoder(passwordEncoder);
+        //import userservice class
+        provider.setUserDetailsService(appUserService);
+        return provider;
+
+    }
+
+  /*  @Override
     @Bean
     protected UserDetailsService userDetailsService() {
       UserDetails anna =  User.builder()
@@ -101,5 +117,5 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
               yasser,
               tom
       );
-    }
+    }*/
 }
